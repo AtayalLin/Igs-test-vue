@@ -962,6 +962,6 @@ VITE_WS_URL=wss://your-api-domain.com/ws
 
 **⭐ 如果這個專案對您有幫助，請給我們一個 Star！⭐**
 
-Made with ❤️ by Game Hall Team
+Made with ❤️ by Game Hall Team01
 
 </div>
