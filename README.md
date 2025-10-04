@@ -319,7 +319,6 @@ npm run preview
 | NEW      | `/assets/images/ui/badges/new-badge.png`        | 新上線遊戲 |
 | 活動     | `/assets/images/ui/badges/event-badge.png`      | 活動遊戲   |
 | 加強送   | `/assets/images/ui/badges/bonus-badge.png`      | 獎勵加強   |
-| 加碼送   | `/assets/images/ui/badges/bonus-badge.png`      | 獎勵加碼   |
 | x1000    | `/assets/images/ui/badges/multiplier-badge.png` | 高倍率     |
 
 **添加新標籤**：
