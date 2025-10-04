@@ -1,0 +1,30 @@
+{
+  "name": "game-hall",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Modern Game Hall Application built with Vue 3 + Vite",
+  "author": "AtayalLin",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AtayalLin/Igs-test-vue.git"
+  },
+  "homepage": "https://atayallin.github.io/Igs-test-vue/",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "deploy": "npm run build && gh-pages -d dist"
+  },
+  "dependencies": {
+    "bootstrap": "^5.3.2",
+    "gsap": "^3.12.2",
+    "pinia": "^3.0.3",
+    "vue": "^3.5.21",
+    "vue-router": "^4.5.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^6.0.1",
+    "vite": "^7.1.7"
+  }
+}

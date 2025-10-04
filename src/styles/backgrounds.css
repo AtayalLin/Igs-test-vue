@@ -1,0 +1,129 @@
+/* 遊戲大廳背景樣式配置 */
+
+/* 主背景 - 深色遊戲風格 */
+.main-background {
+  background:
+    /* 頂層：細微的噪點紋理 */ url("/assets/images/backgrounds/noise-texture.webp"),
+    /* 中層：徑向漸變營造聚光效果 */
+      radial-gradient(
+        ellipse at center top,
+        rgba(30, 30, 50, 0.8) 0%,
+        transparent 70%
+      ),
+    /* 底層：深色漸變 */
+      linear-gradient(180deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+  background-size: 200px 200px, 100% 100%, 100% 100%;
+  background-attachment: fixed, scroll, scroll;
+  min-height: 100vh;
+}
+
+/* 頂部標頭背景 */
+.header-background {
+  background: linear-gradient(
+      135deg,
+      rgba(0, 0, 0, 0.9) 0%,
+      rgba(20, 20, 40, 0.95) 100%
+    ),
+    url("/assets/images/backgrounds/header-pattern.webp");
+  background-size: cover, 100px 100px;
+  backdrop-filter: blur(10px);
+  border-bottom: 2px solid rgba(255, 215, 0, 0.3);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+/* 遊戲卡片背景 */
+.game-card-background {
+  background: linear-gradient(
+      135deg,
+      rgba(40, 40, 60, 0.9) 0%,
+      rgba(20, 20, 40, 0.95) 100%
+    ),
+    url("/assets/images/backgrounds/card-texture.webp");
+  background-size: cover;
+  border: 1px solid rgba(255, 215, 0, 0.2);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+/* 輪播背景 */
+.carousel-background {
+  background: linear-gradient(45deg, rgba(0, 0, 0, 0.3) 0%, transparent 100%),
+    url("/assets/images/backgrounds/carousel-bg.webp");
+  background-size: cover;
+  border-radius: 15px;
+  overflow: hidden;
+}
+
+/* 底部導航背景 */
+.footer-background {
+  background: linear-gradient(
+      0deg,
+      rgba(0, 0, 0, 0.95) 0%,
+      rgba(20, 20, 40, 0.9) 100%
+    ),
+    url("/assets/images/backgrounds/footer-pattern.webp");
+  background-size: cover, 50px 50px;
+  border-top: 2px solid rgba(255, 215, 0, 0.3);
+  backdrop-filter: blur(15px);
+}
+
+/* 特效背景 */
+.sparkle-effect {
+  position: relative;
+  overflow: hidden;
+}
+
+.sparkle-effect::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: url("/assets/images/ui/decorations/sparkle-animation.gif");
+  background-size: 100px 100px;
+  opacity: 0.1;
+  animation: sparkle-rotate 20s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes sparkle-rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* 金色光暈效果 */
+.golden-glow {
+  position: relative;
+}
+
+.golden-glow::after {
+  content: "";
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(45deg, #ffd700, #ffb347, #ffd700, #ffb347);
+  background-size: 400% 400%;
+  border-radius: inherit;
+  z-index: -1;
+  animation: golden-pulse 3s ease-in-out infinite;
+  opacity: 0.6;
+}
+
+@keyframes golden-pulse {
+  0%,
+  100% {
+    background-position: 0% 50%;
+    opacity: 0.6;
+  }
+  50% {
+    background-position: 100% 50%;
+    opacity: 0.8;
+  }
+}
