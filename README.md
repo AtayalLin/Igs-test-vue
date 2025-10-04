@@ -837,6 +837,54 @@ tl.to(".badge", { scale: 1.2, duration: 0.3 })
 
 ---
 
+## 🚀 部署指南
+
+### GitHub Pages 自動部署
+
+本專案已配置 GitHub Actions 自動部署到 GitHub Pages。
+
+**部署流程**：
+
+1. 推送代碼到 `main` 分支
+2. GitHub Actions 自動觸發構建
+3. 構建完成後自動部署到 GitHub Pages
+4. 訪問 [https://atayallin.github.io/Igs-test-vue/](https://atayallin.github.io/Igs-test-vue/)
+
+**手動部署**：
+
+```bash
+# 構建生產版本
+npm run build
+
+# 預覽構建結果
+npm run preview
+```
+
+### 配置說明
+
+**Vite 配置** (`vite.config.js`)：
+
+- `base`: 設置為 `/Igs-test-vue/` 以支援 GitHub Pages
+- `build.outDir`: 輸出目錄為 `dist`
+- `build.rollupOptions`: 代碼分割優化
+
+**GitHub Actions** (`.github/workflows/deploy.yml`)：
+
+- 自動構建和部署
+- 使用 Node.js 20
+- 支援手動觸發 (`workflow_dispatch`)
+
+### 環境變數
+
+創建 `.env` 文件（參考 `.env.example`）：
+
+```env
+VITE_API_BASE_URL=https://your-api-domain.com/api/v1
+VITE_WS_URL=wss://your-api-domain.com/ws
+```
+
+---
+
 ## 🤝 貢獻指南
 
 歡迎提交 Issue 和 Pull Request！
@@ -849,6 +897,13 @@ tl.to(".badge", { scale: 1.2, duration: 0.3 })
 4. 推送到分支 (`git push origin feature/AmazingFeature`)
 5. 開啟 Pull Request
 
+**代碼規範**：
+
+- 使用 ESLint 進行代碼檢查
+- 遵循 Vue 3 Composition API 風格
+- 組件命名使用 PascalCase
+- 文件命名使用 kebab-case
+
 ---
 
 ## 📄 授權
@@ -859,7 +914,7 @@ tl.to(".badge", { scale: 1.2, duration: 0.3 })
 
 ## 👥 作者
 
-**開發團隊** - 遊戲大廳專案組
+**AtayalLin** - [GitHub](https://github.com/AtayalLin)
 
 ---
 
@@ -870,6 +925,27 @@ tl.to(".badge", { scale: 1.2, duration: 0.3 })
 - [Pinia](https://pinia.vuejs.org/) - Vue 狀態管理
 - [Bootstrap](https://getbootstrap.com/) - CSS 框架
 - [GSAP](https://greensock.com/gsap/) - 動畫庫
+- [GitHub Pages](https://pages.github.com/) - 靜態網站託管
+
+---
+
+## 📞 聯繫方式
+
+- **GitHub Issues**: [提交問題](https://github.com/AtayalLin/Igs-test-vue/issues)
+- **GitHub Discussions**: [參與討論](https://github.com/AtayalLin/Igs-test-vue/discussions)
+
+---
+
+## 📊 專案狀態
+
+![GitHub last commit](https://img.shields.io/github/last-commit/AtayalLin/Igs-test-vue)
+![GitHub issues](https://img.shields.io/github/issues/AtayalLin/Igs-test-vue)
+![GitHub stars](https://img.shields.io/github/stars/AtayalLin/Igs-test-vue)
+![GitHub forks](https://img.shields.io/github/forks/AtayalLin/Igs-test-vue)
+
+**當前版本**: v1.0.0
+**最後更新**: 2025-10-04
+**部署狀態**: ✅ 已部署到 GitHub Pages
 
 ---
 
