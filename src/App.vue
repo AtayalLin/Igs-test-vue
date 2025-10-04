@@ -27,19 +27,41 @@ onMounted(() => {
 
 <template>
   <div id="app">
-    <Header />
+    <!-- 固定頂部 Header -->
+    <Header class="app-header" />
+
+    <!-- 固定跑馬燈 -->
+    <NoticeMarquee class="app-notice" />
+
+    <!-- 主內容區 - 可滾動 -->
     <main class="main-content">
-      <NoticeMarquee />
       <CategoryTabs />
       <BannerCarousel />
       <GameGrid />
     </main>
+
+    <!-- 浮動聊天按鈕 -->
     <FloatingChatButton />
-    <FooterNav />
+
+    <!-- 固定底部導航 -->
+    <FooterNav class="app-footer" />
   </div>
 </template>
 
 <style>
+/* 全局樣式重置 */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: #000;
+  overflow: hidden; /* 防止 body 滾動 */
+}
+
 #app {
   width: 100%;
   height: 100vh;
@@ -62,7 +84,7 @@ onMounted(() => {
   color: white;
 }
 
-/* 添加整體光暈效果 */
+/* 添加整體光暈效果 - 增強遊戲氛圍 */
 #app::before {
   content: "";
   position: fixed;
@@ -72,44 +94,102 @@ onMounted(() => {
   bottom: 0;
   background: radial-gradient(
       circle at 20% 20%,
-      rgba(255, 215, 0, 0.1) 0%,
+      rgba(255, 215, 0, 0.08) 0%,
       transparent 50%
     ),
     radial-gradient(
       circle at 80% 80%,
-      rgba(102, 126, 234, 0.1) 0%,
+      rgba(102, 126, 234, 0.08) 0%,
       transparent 50%
     );
   pointer-events: none;
-  z-index: -1;
+  z-index: 0;
 }
 
+/* 固定頂部 Header */
+.app-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  height: 60px;
+}
+
+/* 固定跑馬燈 */
+.app-notice {
+  position: fixed;
+  top: 60px;
+  left: 0;
+  right: 0;
+  z-index: 999;
+  height: 45px;
+}
+
+/* 主內容區 - 可滾動 */
 .main-content {
-  padding-bottom: 80px; /* 為底部導航留出空間 */
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  margin-top: 105px; /* Header (60px) + NoticeMarquee (45px) */
+  margin-bottom: 70px; /* Footer height */
+  padding: 0 0 20px 0;
   position: relative;
   z-index: 1;
 }
 
-/* 全局樣式重置 */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+/* 固定底部導航 */
+.app-footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  height: 70px;
 }
 
-body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  background: #000;
-  overflow-x: hidden;
+/* 響應式調整 */
+@media (max-width: 768px) {
+  .main-content {
+    margin-top: 100px;
+  }
+
+  .app-header {
+    height: 55px;
+  }
+
+  .app-notice {
+    top: 55px;
+    height: 40px;
+  }
 }
 
-/* 全局滾動條美化 */
+@media (max-width: 480px) {
+  .main-content {
+    margin-top: 95px;
+  }
+
+  .app-header {
+    height: 50px;
+  }
+
+  .app-notice {
+    top: 50px;
+    height: 38px;
+  }
+
+  .app-footer {
+    height: 65px;
+  }
+}
+
+/* 全局滾動條美化 - 深色主題 */
 ::-webkit-scrollbar {
   width: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.3);
+  background: rgba(0, 0, 0, 0.5);
 }
 
 ::-webkit-scrollbar-thumb {
