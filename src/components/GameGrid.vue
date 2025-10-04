@@ -186,24 +186,27 @@ function handleImageError(event) {
   event.target.src = placeholderImg;
 }
 
+// 導入圖片工具
+import { getImageUrl, IMAGE_PATHS } from "../utils/assets.js";
+
 // --- tag badge image map ---
 function getTagBadgeImage(tag = "") {
   // return object with src & alt
   const badgeMap = {
-    HOT: { src: "/assets/images/ui/badges/hot-badge.webp", alt: "HOT" },
-    NEW: { src: "/assets/images/ui/badges/new-badge.webp", alt: "NEW" },
-    活動: { src: "/assets/images/ui/badges/event-badge.webp", alt: "活動" },
-    加強送: { src: "/assets/images/ui/badges/bonus-badge.webp", alt: "加強送" },
-    加碼送: { src: "/assets/images/ui/badges/bonus-badge.webp", alt: "加碼送" },
+    HOT: { src: getImageUrl(IMAGE_PATHS.badges.hot), alt: "HOT" },
+    NEW: { src: getImageUrl(IMAGE_PATHS.badges.new), alt: "NEW" },
+    活動: { src: getImageUrl(IMAGE_PATHS.badges.event), alt: "活動" },
+    加強送: { src: getImageUrl(IMAGE_PATHS.badges.bonus), alt: "加強送" },
+    加碼送: { src: getImageUrl(IMAGE_PATHS.badges.bonus), alt: "加碼送" },
     x1000: {
-      src: "/assets/images/ui/badges/multiplier-badge.webp",
+      src: getImageUrl(IMAGE_PATHS.badges.multiplier),
       alt: "x1000",
     },
   };
 
   return (
     badgeMap[tag] || {
-      src: "/assets/images/ui/badges/hot-badge.webp",
+      src: getImageUrl(IMAGE_PATHS.badges.hot),
       alt: tag || "badge",
     }
   );

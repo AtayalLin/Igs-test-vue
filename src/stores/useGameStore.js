@@ -1,6 +1,15 @@
 // src/stores/useGameStore.js
 import { defineStore } from "pinia";
 import { mockCategories, mockBanners, mockGames } from "../mockData.js";
+import { getImageUrl } from "../utils/assets.js";
+
+// 處理遊戲圖片路徑
+function processGameImages(games) {
+  return games.map((game) => ({
+    ...game,
+    imageUrl: getImageUrl(game.imageUrl),
+  }));
+}
 
 export const useGameStore = defineStore("game", {
   state: () => {
@@ -20,8 +29,9 @@ export const useGameStore = defineStore("game", {
       this.loading = true;
       // 模擬初始化延遲
       await new Promise((resolve) => setTimeout(resolve, 300));
-      // 預設載入電動分類的遊戲
-      this.games = mockGames[this.selectedCategory] || [];
+      // 預設載入電動分類的遊戲，並處理圖片路徑
+      const rawGames = mockGames[this.selectedCategory] || [];
+      this.games = processGameImages(rawGames);
       this.loading = false;
     },
 
@@ -39,8 +49,9 @@ export const useGameStore = defineStore("game", {
       // 模擬 API 延遲 500ms
       await new Promise((resolve) => setTimeout(resolve, 500));
 
-      // 從 mockData 獲取對應分類的遊戲
-      this.games = mockGames[categoryId] || [];
+      // 從 mockData 獲取對應分類的遊戲，並處理圖片路徑
+      const rawGames = mockGames[categoryId] || [];
+      this.games = processGameImages(rawGames);
 
       this.loading = false;
     },

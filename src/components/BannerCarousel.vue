@@ -75,32 +75,35 @@
 <script setup>
 import { ref, reactive, onMounted, onUnmounted, nextTick } from "vue";
 
+// 導入圖片工具
+import { getImageUrl, IMAGE_PATHS } from "../utils/assets.js";
+
 // Banner 數據配置
 const bannerList = reactive([
   {
     id: 1,
-    image: "/assets/images/banners/banner-1.webp",
+    image: getImageUrl(IMAGE_PATHS.banners.banner1),
     gradient: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
     link: "#banner-1",
     title: "麻將開胡2 特別活動",
   },
   {
     id: 2,
-    image: "/assets/images/banners/banner-2.webp",
+    image: getImageUrl(IMAGE_PATHS.banners.banner2),
     gradient: "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)",
     link: "#banner-2",
     title: "街機新手專區",
   },
   {
     id: 3,
-    image: "/assets/images/banners/banner-3.webp",
+    image: getImageUrl(IMAGE_PATHS.banners.banner3),
     gradient: "linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)",
     link: "#banner-3",
     title: "VIP 專屬優惠",
   },
   {
     id: 4,
-    image: "/assets/images/banners/banner-4.webp",
+    image: getImageUrl(IMAGE_PATHS.banners.banner4),
     gradient: "linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)",
     link: "#banner-4",
     title: "電動嘉年華",

@@ -6,7 +6,7 @@
         <div class="username">{{ user.nickname }}</div>
         <div class="vip-container">
           <img
-            src="/assets/images/ui/icons/vip-crown.webp"
+            :src="vipCrownUrl"
             alt="VIP"
             class="vip-crown"
             @error="handleVipIconError"
@@ -17,7 +17,7 @@
     </div>
     <div class="balance-section">
       <img
-        src="/assets/images/ui/icons/gold-coin.webp"
+        :src="goldCoinUrl"
         alt="金幣"
         class="coin-icon"
         @error="handleCoinIconError"
@@ -38,9 +38,14 @@
 import { computed } from "vue";
 import { storeToRefs } from "pinia";
 import { useUserStore } from "../stores/useUserStore.js";
+import { getImageUrl, IMAGE_PATHS } from "../utils/assets.js";
 
 const userStore = useUserStore();
 const { user, balance, loading } = storeToRefs(userStore);
+
+// 圖片路徑
+const vipCrownUrl = getImageUrl(IMAGE_PATHS.icons.vipCrown);
+const goldCoinUrl = getImageUrl(IMAGE_PATHS.icons.goldCoin);
 
 // 格式化餘額顯示
 const formattedBalance = computed(() => {
