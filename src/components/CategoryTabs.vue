@@ -1,33 +1,38 @@
 <template>
   <div class="category-tabs-container">
-    <div class="category-tabs" ref="tabsContainer">
-      <div
-        v-for="cat in categories"
-        :key="cat.id"
-        :class="[
-          'tab-item',
-          {
-            active: cat.id === selectedCategory,
-            loading: loading && cat.id === selectedCategory,
-          },
-        ]"
-        @click="changeCategory(cat.id)"
-      >
-        <span class="tab-text">{{ cat.name }}</span>
+    <div class="nav-wrapper">
+      <div class="category-tabs" ref="tabsContainer">
         <div
-          v-if="loading && cat.id === selectedCategory"
-          class="loading-spinner"
-        ></div>
+          v-for="cat in categories"
+          :key="cat.id"
+          :class="[
+            'tab-item',
+            {
+              active: cat.id === selectedCategory,
+              loading: loading && cat.id === selectedCategory,
+            },
+          ]"
+          @click="changeCategory(cat.id)"
+        >
+          <span class="tab-text">{{ cat.name }}</span>
+          <div
+            v-if="loading && cat.id === selectedCategory"
+            class="loading-spinner"
+          ></div>
+        </div>
       </div>
-      <div class="search-icon" @click="toggleSearch">
-        <img
-          v-if="!showSearch"
-          src="/assets/images/ui/icons/search-icon.png"
-          alt="搜尋"
-          class="search-icon-img"
-          @error="handleSearchIconError"
-        />
-        <span v-else class="close-icon">✕</span>
+
+      <div class="search-wrapper">
+        <div class="search-icon" @click="toggleSearch">
+          <img
+            v-if="!showSearch"
+            src="/assets/images/ui/icons/search-icon.png"
+            alt="搜尋"
+            class="search-icon-img"
+            @error="handleSearchIconError"
+          />
+          <span v-else class="close-icon">✕</span>
+        </div>
       </div>
     </div>
 
@@ -117,51 +122,72 @@ function handleSearchIconError(event) {
 
 <style scoped>
 .category-tabs-container {
-  background: linear-gradient(180deg, #222 0%, #111 100%);
-  border-bottom: 1px solid #333;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: #ffffff;
+  padding: 4px;
+  border-radius: 22px;
+  margin: 8px 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.nav-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 44px;
 }
 
 .category-tabs {
+  flex: 1;
   display: flex;
-  overflow-x: auto;
-  padding: 12px 15px;
+  align-items: center;
   gap: 8px;
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* IE and Edge */
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  padding-right: 8px;
+  margin-right: 44px;
+}
+
+.search-wrapper {
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 11;
 }
 
 .category-tabs::-webkit-scrollbar {
-  display: none; /* Chrome, Safari, Opera */
+  display: none;
 }
 
 .tab-item {
   position: relative;
-  color: #aaa;
-  padding: 10px 16px;
-  border-radius: 20px;
-  cursor: pointer;
+  padding: 6px 12px;
+  border-radius: 16px;
+  color: #666666;
   white-space: nowrap;
+  cursor: pointer;
+  transition: all 0.2s ease;
   user-select: none;
-  transition: all 0.3s ease;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid transparent;
+  font-size: 14px;
   display: flex;
   align-items: center;
-  gap: 6px;
-  min-width: fit-content;
+  gap: 4px;
+  height: 36px;
 }
 
 .tab-item:hover {
-  background: rgba(255, 255, 255, 0.1);
-  color: #fff;
+  background: rgba(0, 0, 0, 0.05);
 }
 
 .tab-item.active {
-  background: linear-gradient(135deg, #ffd700 0%, #ffb347 100%);
-  color: #333;
-  font-weight: bold;
-  border-color: #ffd700;
-  box-shadow: 0 2px 8px rgba(255, 215, 0, 0.3);
+  background: #4287ff;
+  color: #ffffff;
+  font-weight: 500;
 }
 
 .tab-item.loading {
@@ -177,7 +203,7 @@ function handleSearchIconError(event) {
   width: 12px;
   height: 12px;
   border: 2px solid transparent;
-  border-top: 2px solid #333;
+  border-top: 2px solid currentColor;
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
@@ -192,52 +218,130 @@ function handleSearchIconError(event) {
 }
 
 .search-icon {
-  margin-left: auto;
-  color: #fff;
-  font-size: 1.2rem;
-  cursor: pointer;
-  user-select: none;
-  padding: 8px;
-  border-radius: 50%;
-  transition: all 0.3s ease;
-  background: rgba(255, 255, 255, 0.1);
+  width: 36px;
+  height: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
-  min-width: 40px;
-  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+  background: #ffffff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
 }
 
 .search-icon:hover {
-  background: rgba(255, 255, 255, 0.2);
-  transform: scale(1.1);
+  background: #f5f5f5;
+  transform: scale(1.05);
 }
 
 .search-icon-img {
   width: 20px;
   height: 20px;
-  filter: brightness(0) invert(1);
-  transition: all 0.3s ease;
+  opacity: 0.6;
 }
 
 .close-icon {
-  font-size: 1.2rem;
-  font-weight: bold;
+  font-size: 16px;
+  color: #666;
 }
 
 .search-container {
-  padding: 12px 15px;
-  background: rgba(0, 0, 0, 0.3);
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 16px;
+  right: 16px;
+  padding: 8px;
   display: flex;
-  gap: 10px;
+  gap: 8px;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  animation: slideDown 0.2s ease-out;
+  z-index: 12;
+}
+
+.search-input {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid #e0e0e0;
+  border-radius: 20px;
+  font-size: 14px;
+  outline: none;
+}
+
+.search-button {
+  padding: 8px 16px;
+  background: #4287ff;
+  color: #ffffff;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.search-button:hover {
+  background: #3476e8;
+}
+
+@keyframes slideDown {
+  from {
+    transform: translateY(-10px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.search-icon {
+  position: absolute;
+  right: 4px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.05);
+  display: flex;
   align-items: center;
-  animation: slideDown 0.3s ease;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+}
+.search-icon:hover {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.search-icon-img {
+  width: 16px;
+  height: 16px;
+  opacity: 0.6;
+}
+
+.close-icon {
+  font-size: 14px;
+  color: #666666;
+}
+
+.search-container {
+  margin-top: 8px;
+  padding: 8px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  animation: slideDown 0.2s ease;
+  background: #f5f5f5;
+  border-radius: 16px;
 }
 
 @keyframes slideDown {
   from {
     opacity: 0;
-    transform: translateY(-10px);
+    transform: translateY(-4px);
   }
   to {
     opacity: 1;
@@ -247,69 +351,73 @@ function handleSearchIconError(event) {
 
 .search-input {
   flex: 1;
-  padding: 10px 15px;
-  border: none;
-  border-radius: 20px;
-  background: rgba(255, 255, 255, 0.1);
-  color: white;
+  padding: 8px 12px;
+  border: 1px solid #e0e0e0;
+  border-radius: 16px;
+  background: #ffffff;
+  color: #333333;
   font-size: 14px;
   outline: none;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
 }
 
 .search-input::placeholder {
-  color: #aaa;
+  color: #999999;
 }
 
 .search-input:focus {
-  background: rgba(255, 255, 255, 0.15);
-  box-shadow: 0 0 0 2px rgba(255, 215, 0, 0.3);
+  border-color: #4287ff;
+  box-shadow: 0 0 0 2px rgba(66, 135, 255, 0.1);
 }
 
 .search-button {
-  padding: 10px 20px;
+  padding: 8px 16px;
   border: none;
-  border-radius: 20px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 16px;
+  background: #4287ff;
   color: white;
   font-size: 14px;
-  font-weight: bold;
+  font-weight: 500;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
 }
 
 .search-button:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+  background: #3b7ae6;
 }
 
 .search-button:active {
-  transform: translateY(0);
+  transform: translateY(1px);
 }
 
 /* 響應式設計 */
 @media (max-width: 480px) {
+  .category-tabs-container {
+    margin: 6px 12px;
+    padding: 6px 12px;
+  }
+
   .category-tabs {
-    padding: 10px 12px;
     gap: 6px;
   }
 
   .tab-item {
-    padding: 8px 12px;
+    padding: 6px 12px;
     font-size: 13px;
   }
 
   .search-container {
-    padding: 10px 12px;
+    margin-top: 6px;
+    padding: 6px;
   }
 
   .search-input {
-    padding: 8px 12px;
+    padding: 6px 10px;
     font-size: 13px;
   }
 
   .search-button {
-    padding: 8px 16px;
+    padding: 6px 12px;
     font-size: 13px;
   }
 }

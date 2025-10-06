@@ -1,7 +1,8 @@
 <script setup>
-import { onMounted } from "vue";
+import { onMounted, ref } from "vue";
 import { useGameStore } from "./stores/useGameStore.js";
 import { getImageUrl, IMAGE_PATHS } from "./utils/assets.js";
+import { usePullToRefresh } from "./composables/usePullToRefresh.js";
 import Header from "./components/Header.vue";
 import NoticeMarquee from "./components/NoticeMarquee.vue";
 import CategoryTabs from "./components/CategoryTabs.vue";
@@ -9,8 +10,27 @@ import BannerCarousel from "./components/BannerCarousel.vue";
 import GameGrid from "./components/GameGrid.vue";
 import FloatingChatButton from "./components/FloatingChatButton.vue";
 import FooterNav from "./components/FooterNav.vue";
+import PullToRefreshIndicator from "./components/PullToRefreshIndicator.vue";
 
 const gameStore = useGameStore();
+const mainContentRef = ref(null);
+
+// 處理下拉重新整理
+const { isPulling, pullDistance, isRefreshing } = usePullToRefresh(
+  mainContentRef,
+  async () => {
+    try {
+      await gameStore.initializeData();
+    } catch (error) {
+      console.error("重新整理失敗:", error);
+    }
+  }
+);
+
+// 處理重新整理完成
+const onRefreshComplete = () => {
+  console.log("重新整理完成");
+};
 
 // 初始化應用數據
 onMounted(() => {
@@ -34,7 +54,13 @@ onMounted(() => {
     <NoticeMarquee class="app-notice" />
 
     <!-- 主內容區 - 可滾動 -->
-    <main class="main-content">
+    <main class="main-content" ref="mainContentRef">
+      <PullToRefreshIndicator
+        :is-pulling="isPulling"
+        :pull-distance="pullDistance"
+        :is-refreshing="isRefreshing"
+        @refresh-complete="onRefreshComplete"
+      />
       <CategoryTabs />
       <BannerCarousel />
       <GameGrid />
@@ -131,6 +157,7 @@ body {
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
   margin-top: 105px; /* Header (60px) + NoticeMarquee (45px) */
   margin-bottom: 70px; /* Footer height */
   padding: 0 0 20px 0;

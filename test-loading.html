@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>載入畫面測試</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            background: #1a1a2e;
+            color: white;
+        }
+        .test-controls {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 100000;
+            background: rgba(0,0,0,0.8);
+            padding: 15px;
+            border-radius: 10px;
+            border: 2px solid #ffd700;
+        }
+        .test-btn {
+            background: #ffd700;
+            color: #000;
+            border: none;
+            padding: 10px 15px;
+            margin: 5px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .test-btn:hover {
+            background: #ffb347;
+        }
+        .info {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: rgba(255,215,0,0.1);
+            border-radius: 10px;
+            border-left: 4px solid #ffd700;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-controls">
+        <h3>載入畫面測試</h3>
+        <button class="test-btn" onclick="testLoading()">測試載入畫面</button>
+        <button class="test-btn" onclick="testRefresh()">測試重新整理</button>
+        <button class="test-btn" onclick="location.reload()">重新載入頁面</button>
+    </div>
+
+    <div class="info">
+        <h2>🎮 遊戲大廳載入畫面測試</h2>
+        <p><strong>功能測試項目：</strong></p>
+        <ul>
+            <li>✅ 全畫面覆蓋（包括導覽列、導航列）</li>
+            <li>✅ 遊戲電玩 emoji 動畫</li>
+            <li>✅ Bootstrap 風格進度條</li>
+            <li>✅ GSAP 動畫效果</li>
+            <li>✅ 下拉重新整理功能</li>
+            <li>✅ 載入完成後進入遊戲大廳</li>
+        </ul>
+        
+        <p><strong>測試說明：</strong></p>
+        <ol>
+            <li>點擊「測試載入畫面」按鈕查看載入動畫</li>
+            <li>點擊「測試重新整理」按鈕模擬下拉重新整理</li>
+            <li>在手機上可以嘗試下拉手勢觸發重新整理</li>
+            <li>觀察載入畫面是否完全覆蓋所有UI元素</li>
+        </ol>
+
+        <p><strong>預期效果：</strong></p>
+        <ul>
+            <li>🎯 載入畫面應該完全覆蓋整個螢幕</li>
+            <li>🎮 顯示多個遊戲相關的 emoji 動畫</li>
+            <li>📊 Bootstrap 風格的條紋進度條</li>
+            <li>✨ 流暢的 GSAP 動畫效果</li>
+            <li>⏱️ 載入時間約 4-5 秒</li>
+        </ul>
+    </div>
+
+    <script>
+        function testLoading() {
+            // 模擬觸發載入畫面
+            const event = new CustomEvent('show-loading');
+            window.dispatchEvent(event);
+            alert('載入畫面測試已觸發！請查看主應用程式。');
+        }
+
+        function testRefresh() {
+            // 模擬下拉重新整理
+            const event = new CustomEvent('test-refresh');
+            window.dispatchEvent(event);
+            alert('重新整理測試已觸發！請查看主應用程式。');
+        }
+
+        // 顯示當前時間
+        function updateTime() {
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString('zh-TW');
+            document.title = `載入畫面測試 - ${timeStr}`;
+        }
+        
+        setInterval(updateTime, 1000);
+        updateTime();
+    </script>
+</body>
+</html>

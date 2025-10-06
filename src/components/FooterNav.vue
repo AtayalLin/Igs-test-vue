@@ -3,7 +3,8 @@
     <div
       v-for="item in navItems"
       :key="item.id"
-      :class="['nav-item', { special: item.special, active: item.active }]"
+      :class="['nav-item', { active: item.active }]"
+      :special="item.special"
       @click="handleNavClick(item)"
     >
       <div class="nav-icon">{{ item.icon }}</div>
@@ -17,66 +18,41 @@ import { ref } from "vue";
 
 const navItems = ref([
   {
-    id: "other",
-    label: "其他",
-    icon: "⚙️",
-    special: false,
-    active: false,
+    id: "games",
+    label: "遊戲",
+    icon: "🀄",
+    active: true,
   },
   {
-    id: "ranking",
-    label: "排行榜",
-    icon: "🏆",
-    special: false,
+    id: "wallet",
+    label: "錢包",
+    icon: "💰",
     active: false,
   },
   {
     id: "shop",
     label: "商城",
-    icon: "🛍️",
-    special: true, // 特殊樣式
+    icon: "👛",
+    active: false,
+    special: true,
+  },
+  {
+    id: "vip",
+    label: "會員",
+    icon: "👑",
     active: false,
   },
   {
-    id: "gift",
-    label: "贈禮",
-    icon: "🎁",
-    special: false,
-    active: false,
-  },
-  {
-    id: "guild",
-    label: "公會",
-    icon: "👥",
-    special: false,
+    id: "more",
+    label: "更多",
+    icon: "⋯",
     active: false,
   },
 ]);
 
 function handleNavClick(item) {
-  // 重置所有項目的 active 狀態
   navItems.value.forEach((nav) => (nav.active = false));
-  // 設置當前點擊項目為 active
   item.active = true;
-
-  // 模擬導航功能
-  switch (item.id) {
-    case "other":
-      alert("進入其他功能頁面");
-      break;
-    case "ranking":
-      alert("進入排行榜頁面");
-      break;
-    case "shop":
-      alert("進入商城頁面");
-      break;
-    case "gift":
-      alert("進入贈禮頁面");
-      break;
-    case "guild":
-      alert("進入公會頁面");
-      break;
-  }
 }
 </script>
 
@@ -86,22 +62,18 @@ function handleNavClick(item) {
   bottom: 0;
   left: 0;
   right: 0;
-  height: 70px;
-  background: linear-gradient(
-      0deg,
-      rgba(0, 0, 0, 0.95) 0%,
-      rgba(20, 20, 40, 0.9) 100%
-    ),
-    url("/assets/images/backgrounds/footer-bg.png");
-  background-size: auto, auto;
-  backdrop-filter: blur(15px);
+  height: 64px;
+  background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.6)),
+    url("/assets/images/backgrounds/footer-bg.webp");
+  background-size: cover;
+  background-position: center;
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   justify-content: space-around;
-  padding: 0 10px;
-  border-top: 2px solid rgba(255, 215, 0, 0.3);
-  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.5);
+  padding: 0 12px 4px;
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.2);
   z-index: 999;
+  backdrop-filter: blur(2px);
 }
 
 .nav-item {
@@ -111,87 +83,73 @@ function handleNavClick(item) {
   justify-content: center;
   cursor: pointer;
   transition: all 0.3s ease;
-  padding: 8px;
-  border-radius: 8px;
-  min-width: 60px;
+  position: relative;
+  padding: 8px 4px;
+  flex: 1;
+  height: 56px;
 }
 
 .nav-item:hover {
-  background: rgba(255, 255, 255, 0.1);
+  opacity: 0.8;
 }
 
 .nav-item.active {
-  background: rgba(255, 215, 0, 0.2);
-}
-
-.nav-item.special {
-  position: relative;
-  transform: translateY(-10px);
-  background: linear-gradient(135deg, #ffd700 0%, #ffb347 100%);
-  border-radius: 50%;
-  width: 60px;
-  height: 60px;
-  box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
-}
-
-.nav-item.special:hover {
-  transform: translateY(-12px) scale(1.05);
-  box-shadow: 0 6px 20px rgba(255, 215, 0, 0.6);
-}
-
-.nav-item.special .nav-icon {
-  font-size: 24px;
-}
-
-.nav-item.special .nav-label {
-  color: #333;
-  font-weight: bold;
-  text-shadow: none;
+  color: #007aff;
 }
 
 .nav-icon {
-  font-size: 20px;
-  margin-bottom: 4px;
+  font-size: 24px;
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 2px;
 }
 
 .nav-label {
   font-size: 12px;
-  color: #ccc;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+  color: rgba(255, 255, 255, 0.8);
   font-weight: 500;
 }
 
+.nav-item.active .nav-icon,
 .nav-item.active .nav-label {
-  color: #ffd700;
+  color: #ffffff;
+  font-weight: 600;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
-/* 為商城按鈕添加脈衝動畫 */
-.nav-item.special::before {
-  content: "";
-  position: absolute;
-  top: -5px;
-  left: -5px;
-  right: -5px;
-  bottom: -5px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #ffd700 0%, #ffb347 100%);
-  opacity: 0.3;
-  animation: pulse-ring 2s infinite;
-  z-index: -1;
+/* 特殊按鈕樣式 */
+.nav-item[special] {
+  margin-top: -20px;
+  height: 76px;
+  background: linear-gradient(135deg, #ffd700, #ffa500);
+  border-radius: 50% 50% 12px 12px;
+  box-shadow: 0 -4px 12px rgba(255, 215, 0, 0.3);
+  padding-top: 12px;
 }
 
-@keyframes pulse-ring {
-  0% {
-    transform: scale(1);
-    opacity: 0.3;
+.nav-item[special] .nav-icon {
+  font-size: 32px;
+  color: #ffffff;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.nav-item[special] .nav-label {
+  color: #ffffff;
+  font-weight: 600;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.nav-item[special]:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 -6px 16px rgba(255, 215, 0, 0.4);
+}
+
+@media (max-width: 360px) {
+  .nav-icon {
+    font-size: 20px;
   }
-  50% {
-    transform: scale(1.1);
-    opacity: 0.1;
-  }
-  100% {
-    transform: scale(1.2);
-    opacity: 0;
+
+  .nav-label {
+    font-size: 10px;
   }
 }
 </style>

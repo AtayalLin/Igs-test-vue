@@ -17,8 +17,9 @@
     "deploy": "npm run build && gh-pages -d dist"
   },
   "dependencies": {
-    "bootstrap": "^5.3.2",
-    "gsap": "^3.12.2",
+    "@popperjs/core": "^2.11.8",
+    "bootstrap": "^5.3.8",
+    "gsap": "^3.13.0",
     "pinia": "^3.0.3",
     "vue": "^3.5.21",
     "vue-router": "^4.5.1"
