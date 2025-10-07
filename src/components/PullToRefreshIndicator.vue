@@ -1,10 +1,9 @@
 <template>
-  <div>
-    <!-- 下拉重新整理指示器 -->
+  <div class="pull-to-refresh-wrapper">
     <div
       class="pull-to-refresh-indicator"
       :style="{
-        transform: `translateY(${pullDistance}px)`,
+        transform: `translateY(${indicatorTranslateY}px)`,
         opacity: pullDistance > 0 ? 1 : 0,
       }"
     >
@@ -42,32 +41,28 @@
           <span v-if="!isRefreshing && pullDistance < threshold"
             >下拉重新整理</span
           >
-          <span v-else-if="!isRefreshing && pullDistance >= threshold"
-            >放開將重新整理遊戲頁面</span
+          <div
+            v-else-if="!isRefreshing && pullDistance >= threshold"
+            class="release-to-refresh-box"
           >
+            放開將重新整理遊戲頁面
+          </div>
           <span v-else>正在重新整理...</span>
         </div>
       </div>
     </div>
+
+    <slot />
   </div>
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { computed, watch } from "vue";
 
 const props = defineProps({
-  isPulling: {
-    type: Boolean,
-    default: false,
-  },
-  pullDistance: {
-    type: Number,
-    default: 0,
-  },
-  isRefreshing: {
-    type: Boolean,
-    default: false,
-  },
+  isPulling: Boolean,
+  pullDistance: Number,
+  isRefreshing: Boolean,
   threshold: {
     type: Number,
     default: 80,
@@ -75,12 +70,35 @@ const props = defineProps({
 });
 
 const emit = defineEmits(["refresh-complete"]);
+
+const indicatorHeight = 80;
+
+const indicatorTranslateY = computed(() => {
+  const clamped = Math.min(props.pullDistance, props.threshold);
+  return -indicatorHeight + (clamped / props.threshold) * indicatorHeight;
+});
+
+// 監聽刷新狀態，當刷新結束時發射事件
+watch(
+  () => props.isRefreshing,
+  (newVal, oldVal) => {
+    if (oldVal === true && newVal === false) {
+      emit("refresh-complete");
+    }
+  }
+);
 </script>
 
 <style scoped>
+/* 保持你原有樣式 */
+.pull-to-refresh-wrapper {
+  position: relative;
+  overflow: hidden;
+}
+
 .pull-to-refresh-indicator {
   position: absolute;
-  top: -80px;
+  top: 0;
   left: 0;
   right: 0;
   height: 80px;
@@ -105,6 +123,7 @@ const emit = defineEmits(["refresh-complete"]);
   align-items: center;
   justify-content: center;
   color: #fff;
+  transition: transform 0.3s ease, color 0.3s ease;
 }
 
 .refresh-icon.is-pulling {
@@ -150,9 +169,15 @@ const emit = defineEmits(["refresh-complete"]);
   line-height: 1.4;
 }
 
-.refresh-icon.is-ready + .refresh-text,
-.refresh-icon.is-refreshing + .refresh-text {
+.release-to-refresh-box {
+  display: inline-block;
+  padding: 6px 12px;
+  background-color: rgba(255, 215, 0, 0.2);
+  border: 2px solid #ffd700;
+  border-radius: 8px;
   color: #ffd700;
   font-weight: 600;
+  user-select: none;
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.6);
 }
 </style>

@@ -16,10 +16,10 @@ import AOS from "aos";
 
 const gameStore = useGameStore();
 const mainContentRef = ref(null);
-const showGlobalLoading = ref(true); // 顯示全局讀取畫面直到初始化完成
+const showGlobalLoading = ref(true);
 
-// 處理下拉重新整理 - 在刷新時顯示全畫面 loading
-const { isPulling, pullDistance, isRefreshing } = usePullToRefresh(
+// 使用 usePullToRefresh composable，綁定主內容容器與刷新函式
+const { isPulling, pullDistance, isRefreshing, threshold } = usePullToRefresh(
   mainContentRef,
   async () => {
     try {
@@ -37,17 +37,17 @@ const { isPulling, pullDistance, isRefreshing } = usePullToRefresh(
   }
 );
 
-// 處理重新整理完成
+// 監聽 PullToRefreshIndicator 發出的刷新完成事件
 const onRefreshComplete = () => {
   console.log("重新整理完成");
+  // 你可以在這裡執行額外的操作，例如提示訊息、動畫等
 };
 
 // 初始化應用數據
 onMounted(async () => {
-  // 顯示全畫面 loading，模擬最少等待 500ms
   showGlobalLoading.value = true;
 
-  // 取得背景圖片
+  // 設定背景圖片 CSS 變數
   const bgImageUrl = getImageUrl(IMAGE_PATHS.backgrounds.main);
   document.documentElement.style.setProperty(
     "--bg-image",
@@ -88,6 +88,7 @@ onMounted(async () => {
           :is-pulling="isPulling"
           :pull-distance="pullDistance"
           :is-refreshing="isRefreshing"
+          :threshold="threshold"
           @refresh-complete="onRefreshComplete"
         />
         <CategoryTabs />
