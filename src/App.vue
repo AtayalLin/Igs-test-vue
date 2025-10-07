@@ -11,18 +11,28 @@ import GameGrid from "./components/GameGrid.vue";
 import FloatingChatButton from "./components/FloatingChatButton.vue";
 import FooterNav from "./components/FooterNav.vue";
 import PullToRefreshIndicator from "./components/PullToRefreshIndicator.vue";
+import LoadingScreen from "./components/LoadingScreen.vue";
+import AOS from "aos";
 
 const gameStore = useGameStore();
 const mainContentRef = ref(null);
+const showGlobalLoading = ref(true); // 顯示全局讀取畫面直到初始化完成
 
-// 處理下拉重新整理
+// 處理下拉重新整理 - 在刷新時顯示全畫面 loading
 const { isPulling, pullDistance, isRefreshing } = usePullToRefresh(
   mainContentRef,
   async () => {
     try {
+      showGlobalLoading.value = true;
       await gameStore.initializeData();
     } catch (error) {
       console.error("重新整理失敗:", error);
+    } finally {
+      // 保持 loading 一小段時間以利過渡（2秒）
+      setTimeout(() => {
+        showGlobalLoading.value = false;
+        if (typeof AOS !== "undefined") AOS.refresh();
+      }, 2000);
     }
   }
 );
@@ -33,44 +43,64 @@ const onRefreshComplete = () => {
 };
 
 // 初始化應用數據
-onMounted(() => {
-  gameStore.initializeData();
+onMounted(async () => {
+  // 顯示全畫面 loading，模擬最少等待 500ms
+  showGlobalLoading.value = true;
 
-  // 設置背景圖片（使用 CSS 變數）
+  // 取得背景圖片
   const bgImageUrl = getImageUrl(IMAGE_PATHS.backgrounds.main);
   document.documentElement.style.setProperty(
     "--bg-image",
     `url("${bgImageUrl}")`
   );
+
+  // 初始化資料並確保至少等待 2000ms
+  const start = Date.now();
+  await gameStore.initializeData();
+  const elapsed = Date.now() - start;
+  const remaining = Math.max(0, 2000 - elapsed);
+  setTimeout(() => {
+    showGlobalLoading.value = false;
+    if (typeof AOS !== "undefined") AOS.refresh();
+  }, remaining);
 });
 </script>
 
 <template>
   <div id="app">
-    <!-- 固定頂部 Header -->
-    <Header class="app-header" />
+    <!-- 全局 LoadingScreen -->
+    <LoadingScreen
+      :isLoading="showGlobalLoading"
+      title="遊戲大廳載入中..."
+      subtitle="正在準備遊戲內容"
+    />
 
-    <!-- 固定跑馬燈 -->
-    <NoticeMarquee class="app-notice" />
+    <template v-if="!showGlobalLoading">
+      <!-- 固定頂部 Header -->
+      <Header class="app-header" />
 
-    <!-- 主內容區 - 可滾動 -->
-    <main class="main-content" ref="mainContentRef">
-      <PullToRefreshIndicator
-        :is-pulling="isPulling"
-        :pull-distance="pullDistance"
-        :is-refreshing="isRefreshing"
-        @refresh-complete="onRefreshComplete"
-      />
-      <CategoryTabs />
-      <BannerCarousel />
-      <GameGrid />
-    </main>
+      <!-- 固定跑馬燈 -->
+      <NoticeMarquee class="app-notice" />
 
-    <!-- 浮動聊天按鈕 -->
-    <FloatingChatButton />
+      <!-- 主內容區 - 可滾動 -->
+      <main class="main-content" ref="mainContentRef">
+        <PullToRefreshIndicator
+          :is-pulling="isPulling"
+          :pull-distance="pullDistance"
+          :is-refreshing="isRefreshing"
+          @refresh-complete="onRefreshComplete"
+        />
+        <CategoryTabs />
+        <BannerCarousel />
+        <GameGrid />
+      </main>
 
-    <!-- 固定底部導航 -->
-    <FooterNav class="app-footer" />
+      <!-- 浮動聊天按鈕 -->
+      <FloatingChatButton />
+
+      <!-- 固定底部導航 -->
+      <FooterNav class="app-footer" />
+    </template>
   </div>
 </template>
 

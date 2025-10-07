@@ -1,58 +1,56 @@
 <template>
-  <nav class="footer-nav">
-    <div
-      v-for="item in navItems"
+  <nav class="footer-nav" role="navigation" aria-label="主頁導航">
+    <!-- Debug message to check if navItems is empty or not -->
+    <div v-if="navItems.length === 0">Loading...</div>
+
+    <button
+      v-for="(item, index) in navItems"
       :key="item.id"
-      :class="['nav-item', { active: item.active }]"
-      :special="item.special"
+      type="button"
+      :class="['nav-item', { active: item.active }, { special: item.special }]"
       @click="handleNavClick(item)"
+      @keydown.enter="handleNavClick(item)"
+      @keydown.space.prevent="handleNavClick(item)"
+      :aria-label="item.label"
+      :aria-current="item.active ? 'page' : undefined"
     >
-      <div class="nav-icon">{{ item.icon }}</div>
+      <div class="nav-icon" :class="{ pulse: item.special }">
+        {{ item.icon }}
+      </div>
       <div class="nav-label">{{ item.label }}</div>
-    </div>
+      <div v-if="item.special" class="special-indicator"></div>
+    </button>
   </nav>
 </template>
 
 <script setup>
 import { ref } from "vue";
 
+const emit = defineEmits(["navigate"]);
+
 const navItems = ref([
-  {
-    id: "gifts",
-    label: "贈禮",
-    icon: "🎁",
-    active: true,
-  },
-  {
-    id: "wallet",
-    label: "錢包",
-    icon: "💰",
-    active: false,
-  },
+  { id: "gifts", label: "贈禮", icon: "🎁", route: "/gifts", active: true },
+  { id: "wallet", label: "錢包", icon: "💰", route: "/wallet", active: false },
   {
     id: "shop",
     label: "商城",
     icon: "👛",
-    active: false,
     special: true,
-  },
-  {
-    id: "vip",
-    label: "會員",
-    icon: "👑",
+    route: "/shop",
     active: false,
   },
-  {
-    id: "more",
-    label: "更多",
-    icon: "⋯",
-    active: false,
-  },
+  { id: "vip", label: "會員", icon: "👑", route: "/vip", active: false },
+  { id: "more", label: "更多", icon: "⋯", route: "/more", active: false },
 ]);
 
 function handleNavClick(item) {
-  navItems.value.forEach((nav) => (nav.active = false));
+  // Set all items to inactive
+  navItems.value.forEach((n) => (n.active = false));
+  // Set the clicked item as active
   item.active = true;
+
+  // Emit the route change
+  emit("navigate", item.route || item.id);
 }
 </script>
 
@@ -84,19 +82,25 @@ function handleNavClick(item) {
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   padding: 8px 4px;
+  background: transparent;
+  border: none;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
   flex: 1;
   height: 56px;
+  min-width: 56px;
+  max-width: 80px;
 }
 
-.nav-item:not([special]) {
+.nav-item {
   overflow: hidden;
   position: relative;
 }
 
-.nav-item:not([special])::before {
+.nav-item::before {
   content: "";
   position: absolute;
   top: 0;
@@ -160,31 +164,59 @@ function handleNavClick(item) {
   text-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
 }
 
-/* 特殊按鈕樣式 */
-.nav-item[special] {
+/* Special button styles */
+.nav-item.special {
   margin-top: -20px;
   height: 76px;
   background: linear-gradient(135deg, #ffd700, #ffa500);
   border-radius: 50% 50% 12px 12px;
   box-shadow: 0 -4px 12px rgba(255, 215, 0, 0.3);
   padding-top: 12px;
+  overflow: visible;
 }
 
-.nav-item[special] .nav-icon {
+.nav-item.special .nav-icon {
   font-size: 32px;
   color: #ffffff;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
-.nav-item[special] .nav-label {
+.nav-item.special .nav-label {
   color: #ffffff;
   font-weight: 600;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
-.nav-item[special]:hover {
+.nav-item.special:hover {
   transform: translateY(-2px);
   box-shadow: 0 -6px 16px rgba(255, 215, 0, 0.4);
+}
+
+.nav-item.special .special-indicator {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #ff3366;
+  box-shadow: 0 0 8px rgba(255, 51, 102, 0.6);
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.nav-icon.pulse {
+  animation: pulse 2s infinite;
 }
 
 @media (max-width: 360px) {
