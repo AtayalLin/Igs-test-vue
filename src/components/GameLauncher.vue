@@ -4,10 +4,38 @@
       <!-- 遊戲載入中 -->
       <div v-if="isLoading" class="launcher-loading">
         <div class="loading-content">
-          <div class="spinner"></div>
-          <h3>{{ loadingText }}</h3>
-          <p>{{ game?.name || '遊戲' }}</p>
-          <button class="cancel-btn" @click="handleCancel">取消</button>
+          <div class="loading-animation">
+            <div class="emoji-container">
+              <span
+                class="loading-emoji"
+                :style="{ '--delay': index * 0.15 + 's' }"
+                v-for="(emoji, index) in loadingEmojis"
+                :key="index"
+              >
+                {{ emoji }}
+              </span>
+            </div>
+            <div class="progress-container">
+              <div class="progress-wrapper">
+                <div
+                  class="progress-bar"
+                  :style="{ width: `${loadingProgress}%` }"
+                >
+                  <div class="progress-glow"></div>
+                </div>
+              </div>
+              <div class="progress-percentage">
+                {{ Math.floor(loadingProgress) }}%
+              </div>
+            </div>
+          </div>
+          <h3 class="loading-title">{{ loadingText }}</h3>
+          <p class="game-name">{{ game?.name || "遊戲" }}</p>
+          <div class="loading-status">{{ loadingPhase }}</div>
+          <button class="cancel-btn" @click="handleCancel">
+            <span class="btn-icon">❌</span>
+            <span class="btn-text">取消</span>
+          </button>
         </div>
       </div>
 
@@ -16,17 +44,33 @@
         <!-- 頂部工具欄 -->
         <div class="game-toolbar">
           <button class="toolbar-btn back-btn" @click="handleClose">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M19 12H5M12 19l-7-7 7-7"/>
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path d="M19 12H5M12 19l-7-7 7-7" />
             </svg>
             <span>返回</span>
           </button>
-          
-          <div class="game-title">{{ game?.name || '遊戲' }}</div>
-          
+
+          <div class="game-title">{{ game?.name || "遊戲" }}</div>
+
           <button class="toolbar-btn refresh-btn" @click="handleRefresh">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/>
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path
+                d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"
+              />
             </svg>
           </button>
         </div>
@@ -65,110 +109,139 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
-import { launchGame } from '../services/api.js'
+import { ref, watch } from "vue";
+import { launchGame } from "../services/api.js";
 
 const props = defineProps({
   game: {
     type: Object,
-    default: null
+    default: null,
   },
   isVisible: {
     type: Boolean,
-    default: false
-  }
-})
+    default: false,
+  },
+});
 
-const emit = defineEmits(['close'])
+const emit = defineEmits(["close"]);
 
-const isLoading = ref(false)
-const isIframeLoading = ref(false)
-const gameUrl = ref('')
-const error = ref('')
-const loadingText = ref('正在啟動遊戲...')
-const gameIframe = ref(null)
+const isLoading = ref(false);
+const isIframeLoading = ref(false);
+const gameUrl = ref("");
+const error = ref("");
+const loadingText = ref("正在啟動遊戲...");
+const gameIframe = ref(null);
+const loadingProgress = ref(0);
+const loadingPhase = ref("初始化中...");
+const loadingEmojis = ["🎮", "🎲", "🎯", "🎪"];
+
+// 模擬載入進度
+function simulateLoading() {
+  return new Promise((resolve) => {
+    loadingProgress.value = 0;
+    const duration = 500; // 總持續時間
+    const interval = 16; // 每幀間隔
+    const steps = duration / interval;
+    const increment = 100 / steps;
+    let currentStep = 0;
+
+    const timer = setInterval(() => {
+      currentStep++;
+      loadingProgress.value = Math.min(currentStep * increment, 100);
+
+      if (currentStep >= steps) {
+        clearInterval(timer);
+        resolve();
+      }
+    }, interval);
+  });
+}
 
 // 啟動遊戲
 async function startGame() {
-  if (!props.game) return
+  if (!props.game) return;
 
-  isLoading.value = true
-  error.value = ''
-  gameUrl.value = ''
-  loadingText.value = '正在連接遊戲伺服器...'
+  isLoading.value = true;
+  error.value = "";
+  gameUrl.value = "";
+  loadingText.value = "正在連接遊戲伺服器...";
 
   try {
-    // 模擬請求延遲
-    await new Promise(resolve => setTimeout(resolve, 800))
-    
-    loadingText.value = '正在獲取遊戲資源...'
-    
+    loadingPhase.value = "連接遊戲伺服器...";
+    await simulateLoading();
+
+    loadingPhase.value = "正在獲取遊戲資源...";
+    loadingText.value = "遊戲準備中...";
+
     // 調用 API 啟動遊戲
-    const response = await launchGame(props.game.id)
-    
+    const response = await launchGame(props.game.id);
+
     if (response.success && response.gameUrl) {
-      loadingText.value = '正在載入遊戲...'
-      gameUrl.value = response.gameUrl
-      isIframeLoading.value = true
-      
-      console.log('✅ 遊戲啟動成功:', {
+      loadingText.value = "正在載入遊戲...";
+      gameUrl.value = response.gameUrl;
+      isIframeLoading.value = true;
+
+      console.log("✅ 遊戲啟動成功:", {
         gameId: props.game.id,
         gameName: props.game.name,
         gameUrl: response.gameUrl,
-        token: response.token
-      })
+        token: response.token,
+      });
     } else {
-      throw new Error('無法獲取遊戲 URL')
+      throw new Error("無法獲取遊戲 URL");
     }
   } catch (err) {
-    console.error('❌ 遊戲啟動失敗:', err)
-    error.value = err.message || '遊戲啟動失敗，請稍後再試'
+    console.error("❌ 遊戲啟動失敗:", err);
+    error.value = err.message || "遊戲啟動失敗，請稍後再試";
   } finally {
-    isLoading.value = false
+    isLoading.value = false;
   }
 }
 
 // Iframe 載入完成
 function handleIframeLoad() {
-  isIframeLoading.value = false
-  console.log('✅ 遊戲 Iframe 載入完成')
+  isIframeLoading.value = false;
+  console.log("✅ 遊戲 Iframe 載入完成");
 }
 
 // 刷新遊戲
 function handleRefresh() {
   if (gameIframe.value) {
-    isIframeLoading.value = true
-    gameIframe.value.src = gameIframe.value.src
+    isIframeLoading.value = true;
+    gameIframe.value.src = gameIframe.value.src;
   }
 }
 
 // 重試
 function handleRetry() {
-  error.value = ''
-  startGame()
+  error.value = "";
+  startGame();
 }
 
 // 取消
 function handleCancel() {
-  isLoading.value = false
-  handleClose()
+  isLoading.value = false;
+  handleClose();
 }
 
 // 關閉
 function handleClose() {
-  gameUrl.value = ''
-  error.value = ''
-  isLoading.value = false
-  isIframeLoading.value = false
-  emit('close')
+  gameUrl.value = "";
+  error.value = "";
+  isLoading.value = false;
+  isIframeLoading.value = false;
+  emit("close");
 }
 
 // 監聽遊戲變化
-watch(() => props.isVisible, (newVal) => {
-  if (newVal && props.game) {
-    startGame()
+watch(
+  () => props.isVisible,
+  (newVal) => {
+    if (newVal && props.game) {
+      startGame();
+    }
   }
-})
+);
 </script>
 
 <style scoped>
@@ -194,34 +267,146 @@ watch(() => props.isVisible, (newVal) => {
 
 .loading-content {
   text-align: center;
+  padding: 2rem;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(10px);
+  max-width: 500px;
 }
 
-.loading-content h3 {
-  margin: 20px 0 10px;
-  font-size: 20px;
+.loading-animation {
+  margin-bottom: 2rem;
+}
+
+.emoji-container {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.loading-emoji {
+  font-size: 3rem;
+  display: inline-block;
+  animation: bounceEmoji 1s ease-in-out infinite;
+  animation-delay: var(--delay);
+  filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.3));
+}
+
+.progress-container {
+  margin-top: 1rem;
+}
+
+.progress-wrapper {
+  width: 100%;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 0.5rem;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2) inset;
+}
+
+.progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #ffd700, #ff6b6b);
+  border-radius: 4px;
+  transition: width 0.3s ease;
+  position: relative;
+}
+
+.progress-glow {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 30px;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.8),
+    transparent
+  );
+  animation: progressGlow 1.5s linear infinite;
+}
+
+.progress-percentage {
   color: #ffd700;
+  font-size: 0.9rem;
+  font-weight: bold;
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
 }
 
-.loading-content p {
-  margin: 0 0 30px;
-  font-size: 16px;
+.loading-title {
+  font-size: 1.5rem;
+  color: #ffd700;
+  margin: 1rem 0;
+  font-weight: bold;
+  text-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+}
+
+.game-name {
+  font-size: 1.2rem;
+  color: white;
+  margin-bottom: 1rem;
+  font-weight: 500;
+}
+
+.loading-status {
   color: rgba(255, 255, 255, 0.7);
+  font-size: 0.9rem;
+  margin-bottom: 2rem;
+  min-height: 1.2em;
 }
 
 .cancel-btn {
-  padding: 10px 30px;
+  padding: 12px 30px;
   background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
   color: white;
-  font-size: 16px;
+  font-size: 1rem;
   cursor: pointer;
   transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 auto;
 }
 
 .cancel-btn:hover {
-  background: rgba(255, 255, 255, 0.2);
-  border-color: rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.3);
+  transform: translateY(-1px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.btn-icon {
+  font-size: 1.1rem;
+}
+
+.btn-text {
+  font-weight: 500;
+}
+
+@keyframes bounceEmoji {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-15px) scale(1.1);
+  }
+}
+
+@keyframes progressGlow {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(300%);
+  }
 }
 
 /* 遊戲容器 */
@@ -401,4 +586,3 @@ watch(() => props.isVisible, (newVal) => {
   opacity: 0;
 }
 </style>
-

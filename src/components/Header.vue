@@ -142,8 +142,8 @@ function handleCoinIconError(event) {
 }
 
 .coin-icon {
-  width: 20px;
-  height: 20px;
+  width: 50px;
+  height: 50px;
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
 }
 .balance {
