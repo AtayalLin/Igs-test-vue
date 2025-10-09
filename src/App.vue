@@ -14,6 +14,7 @@ import FloatingChatButton from "./components/FloatingChatButton.vue";
 import PullToRefreshIndicator from "./components/PullToRefreshIndicator.vue";
 import LoadingScreen from "./components/LoadingScreen.vue";
 import BottomBar from "./components/BottomBar.vue";
+import GameLauncher from "./components/GameLauncher.vue";
 import WalletPage from "./components/WalletPage.vue";
 import ShopPage from "./components/ShopPage.vue";
 import VipPage from "./components/VipPage.vue";
@@ -39,6 +40,17 @@ const showHeaderBar = ref(false);
 const showMainBlocks = ref(false);
 const showFooterBar = ref(false);
 const isAnyLauncherVisible = ref(false);
+const launcherGame = ref(null);
+
+function onLaunchGame(game) {
+  launcherGame.value = game;
+  isAnyLauncherVisible.value = true;
+}
+
+function onLauncherClose() {
+  isAnyLauncherVisible.value = false;
+  launcherGame.value = null;
+}
 
 function handleNavigate(route) {
   // /other /ranking /shop /gifts /guild 以及舊鍵 /wallet /vip /more
@@ -132,7 +144,7 @@ onMounted(async () => {
       />
 
       <!-- 固定跑馬燈 -->
-      <NoticeMarquee class="app-notice" />
+      <NoticeMarquee class="app-notice" :class="{ hiddenByLauncher: isAnyLauncherVisible }" />
 
       <!-- 主內容區 - 可滾動 -->
       <main
@@ -159,8 +171,11 @@ onMounted(async () => {
               <CategoryTabs
                 :class="{ hiddenByLauncher: isAnyLauncherVisible }"
               />
-              <BannerCarousel />
-              <GameGrid @launcher-visibility="isAnyLauncherVisible = $event" />
+              <BannerCarousel :class="{ hiddenByLauncher: isAnyLauncherVisible }" />
+              <GameGrid
+                @launcher-visibility="isAnyLauncherVisible = $event"
+                @launch-game="onLaunchGame"
+              />
             </template>
             <template v-else-if="currentTab === 'gifts-page'">
               <GiftsPage @back-to-lobby="currentTab = 'gifts'" />
@@ -207,7 +222,14 @@ onMounted(async () => {
       </main>
 
       <!-- 浮動聊天按鈕 -->
-      <FloatingChatButton />
+      <FloatingChatButton v-if="!isAnyLauncherVisible" />
+
+      <!-- 全螢幕遊戲啟動器（由 App 控制） -->
+      <GameLauncher
+        :game="launcherGame"
+        :isVisible="isAnyLauncherVisible"
+        @close="onLauncherClose"
+      />
 
       <!-- 固定底部導航 -->
       <BottomBar

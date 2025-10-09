@@ -119,12 +119,7 @@
       </div>
     </transition>
 
-    <!-- 遊戲啟動器 -->
-    <GameLauncher
-      :game="selectedGame"
-      :isVisible="isLauncherVisible"
-      @close="closeLauncher"
-    />
+    <!-- 遊戲啟動器 由 App 掛載（此處移除） -->
 
     <!-- 分頁器 -->
     <nav v-if="totalPages > 1" class="mt-3" aria-label="遊戲分頁">
@@ -167,8 +162,7 @@
 import { ref, onMounted, onUpdated, nextTick, watch, computed } from "vue";
 import { storeToRefs } from "pinia";
 import { useGameStore } from "../stores/useGameStore";
-import GameLauncher from "./GameLauncher.vue";
-const emit = defineEmits(["launcher-visibility"]);
+// 遊戲啟動器由 App 掛載
 import gsap from "gsap";
 
 /**
@@ -179,12 +173,13 @@ import gsap from "gsap";
  * - Hover: image zoom + darken, play button appears
  */
 
+const emit = defineEmits(["launcher-visibility", "launch-game"]);
 const gameStore = useGameStore();
 const { games, loading } = storeToRefs(gameStore);
 
 const placeholderImg = "https://placehold.co/600x400/333/fff?text=Game";
 
-// 遊戲啟動器狀態
+// 遊戲啟動器狀態（App 接管，這裡僅保留調用）
 const isLauncherVisible = ref(false);
 const selectedGame = ref(null);
 
@@ -246,6 +241,7 @@ function playGame(game) {
 
   console.log("🎮 啟動遊戲:", game.name);
   emit("launcher-visibility", true);
+  emit("launch-game", game);
 }
 
 // 關閉遊戲啟動器
