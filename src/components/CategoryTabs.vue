@@ -126,10 +126,12 @@ function handleSearchIconError(event) {
   top: 0;
   z-index: 10;
   background: #ffffff;
-  padding: 4px;
-  border-radius: 22px;
-  margin: 8px 16px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  padding: 6px 8px;
+  border-radius: 28px;
+  margin: 10px 16px;
+  box-shadow:
+    0 10px 20px rgba(0,0,0,0.08),
+    inset 0 1px 0 rgba(255,255,255,0.8);
 }
 
 .nav-wrapper {
@@ -166,18 +168,18 @@ function handleSearchIconError(event) {
 
 .tab-item {
   position: relative;
-  padding: 6px 12px;
-  border-radius: 16px;
-  color: #666666;
+  padding: 10px 16px;
+  border-radius: 999px;
+  color: #4d3a00;
   white-space: nowrap;
   cursor: pointer;
   transition: all 0.2s ease;
   user-select: none;
-  font-size: 14px;
+  font-size: 16px;
   display: flex;
   align-items: center;
   gap: 4px;
-  height: 36px;
+  height: 40px;
 }
 
 .tab-item:hover {
@@ -185,9 +187,10 @@ function handleSearchIconError(event) {
 }
 
 .tab-item.active {
-  background: #4287ff;
+  background: linear-gradient(180deg, #4f8bff, #2f6ef6);
   color: #ffffff;
-  font-weight: 500;
+  font-weight: 800;
+  box-shadow: 0 8px 18px rgba(47,110,246,0.35);
 }
 
 .tab-item.loading {
@@ -226,7 +229,7 @@ function handleSearchIconError(event) {
   border-radius: 50%;
   cursor: pointer;
   background: #ffffff;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.8);
   transition: all 0.2s ease;
 }
 

@@ -1,5 +1,5 @@
 <template>
-  <div class="notice-marquee" @click="showNoticeDetail">
+  <div class="notice-marquee" @click="showNoticeDetail" data-aos="fade-right" data-aos-duration="600">
     <div class="notice-icon">📢</div>
     <div class="marquee-container">
       <div class="marquee-content">

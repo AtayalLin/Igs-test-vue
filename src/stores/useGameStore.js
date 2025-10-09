@@ -11,6 +11,45 @@ function processGameImages(games) {
   }));
 }
 
+// 本地收藏鍵名
+const FAVORITES_STORAGE_KEY = "game_hall_favorites";
+
+// 從 localStorage 載入收藏集合（id -> true）
+function loadFavoritesMap() {
+  try {
+    const raw = localStorage.getItem(FAVORITES_STORAGE_KEY);
+    if (!raw) return {};
+    const parsed = JSON.parse(raw);
+    return parsed && typeof parsed === "object" ? parsed : {};
+  } catch {
+    return {};
+  }
+}
+
+// 儲存收藏集合
+function saveFavoritesMap(favMap) {
+  try {
+    localStorage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify(favMap));
+  } catch {}
+}
+
+// 依據收藏集合同步 mockGames 內的 isFavorite 並重建 favorite 分類
+function syncMockGamesFavorites() {
+  const favMap = loadFavoritesMap();
+  Object.keys(mockGames).forEach((category) => {
+    const list = mockGames[category];
+    if (Array.isArray(list)) {
+      list.forEach((g) => {
+        if (typeof favMap[g.id] === "boolean") {
+          g.isFavorite = favMap[g.id];
+        }
+      });
+    }
+  });
+  // 重建最愛分類
+  mockGames.favorite = (mockGames.all || []).filter((g) => g.isFavorite);
+}
+
 export const useGameStore = defineStore("game", {
   state: () => {
     console.log(`🎮 GameStore: Initialized with ${mockBanners.length} banners`);
@@ -29,6 +68,8 @@ export const useGameStore = defineStore("game", {
       this.loading = true;
       // 模擬初始化延遲
       await new Promise((resolve) => setTimeout(resolve, 300));
+      // 先同步收藏狀態
+      syncMockGamesFavorites();
       // 預設載入電動分類的遊戲，並處理圖片路徑
       const rawGames = mockGames[this.selectedCategory] || [];
       this.games = processGameImages(rawGames);
@@ -48,6 +89,9 @@ export const useGameStore = defineStore("game", {
 
       // 模擬 API 延遲 500ms
       await new Promise((resolve) => setTimeout(resolve, 500));
+
+      // 類別切換時同步收藏狀態（以防其他處更新）
+      syncMockGamesFavorites();
 
       // 從 mockData 獲取對應分類的遊戲，並處理圖片路徑
       const rawGames = mockGames[categoryId] || [];
@@ -97,8 +141,13 @@ export const useGameStore = defineStore("game", {
         }
       });
 
+      // 持久化收藏狀態
+      const favMap = loadFavoritesMap();
+      favMap[gameId] = !!isFavorite;
+      saveFavoritesMap(favMap);
+
       // 重新生成最愛分類
-      mockGames.favorite = mockGames.all.filter((game) => game.isFavorite);
+      mockGames.favorite = (mockGames.all || []).filter((game) => game.isFavorite);
     },
   },
 

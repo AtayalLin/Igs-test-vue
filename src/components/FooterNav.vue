@@ -4,7 +4,7 @@
     <div v-if="navItems.length === 0">Loading...</div>
 
     <button
-      v-for="(item, index) in navItems"
+      v-for="item in navItems"
       :key="item.id"
       type="button"
       :class="['nav-item', { active: item.active }, { special: item.special }]"
@@ -29,8 +29,14 @@ import { ref } from "vue";
 const emit = defineEmits(["navigate"]);
 
 const navItems = ref([
-  { id: "gifts", label: "贈禮", icon: "🎁", route: "/gifts", active: true },
-  { id: "wallet", label: "錢包", icon: "💰", route: "/wallet", active: false },
+  { id: "other", label: "其他", icon: "⚙️", route: "/other", active: false },
+  {
+    id: "ranking",
+    label: "排行榜",
+    icon: "🏆",
+    route: "/ranking",
+    active: false,
+  },
   {
     id: "shop",
     label: "商城",
@@ -39,8 +45,8 @@ const navItems = ref([
     route: "/shop",
     active: false,
   },
-  { id: "vip", label: "會員", icon: "👑", route: "/vip", active: false },
-  { id: "more", label: "更多", icon: "⋯", route: "/more", active: false },
+  { id: "gifts", label: "贈禮", icon: "🎁", route: "/gifts", active: true },
+  { id: "guild", label: "公會", icon: "🏰", route: "/guild", active: false },
 ]);
 
 function handleNavClick(item) {
@@ -60,20 +66,33 @@ function handleNavClick(item) {
   bottom: 0;
   left: 0;
   right: 0;
-  height: 64px;
-  background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.7)),
+  width: 100%;
+  height: calc(70px + env(safe-area-inset-bottom, 0px));
+  padding-bottom: calc(8px + env(safe-area-inset-bottom, 0px));
+  background: radial-gradient(
+      120% 80% at 50% 120%,
+      rgba(255, 215, 0, 0.12) 0%,
+      rgba(0, 0, 0, 0) 60%
+    ),
+    linear-gradient(
+      180deg,
+      rgba(20, 20, 28, 0.75) 0%,
+      rgba(10, 10, 16, 0.92) 100%
+    ),
     url("/assets/images/backgrounds/footer-bg.webp");
   background-size: cover;
   background-position: center;
   display: flex;
   align-items: flex-end;
   justify-content: space-around;
-  padding: 0 12px 4px;
-  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.3), 0 -1px 20px rgba(255, 215, 0, 0.1);
-  z-index: 999;
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
-  border-top: 1px solid rgba(255, 215, 0, 0.1);
+  padding-left: 12px;
+  padding-right: 12px;
+  box-shadow: 0 -4px 18px rgba(0, 0, 0, 0.5),
+    0 -1px 24px rgba(255, 215, 0, 0.12);
+  z-index: 100000;
+  backdrop-filter: blur(10px) saturate(120%);
+  -webkit-backdrop-filter: blur(10px) saturate(120%);
+  border-top: 1px solid rgba(255, 215, 0, 0.18);
 }
 
 .nav-item {
@@ -90,7 +109,7 @@ function handleNavClick(item) {
   outline: none;
   -webkit-tap-highlight-color: transparent;
   flex: 1;
-  height: 56px;
+  height: 60px;
   min-width: 56px;
   max-width: 80px;
 }
@@ -138,7 +157,7 @@ function handleNavClick(item) {
 
 .nav-icon {
   font-size: 24px;
-  color: rgba(255, 255, 255, 0.8);
+  color: rgba(255, 255, 255, 0.9);
   margin-bottom: 2px;
   transition: all 0.3s ease;
   transform-origin: center;
@@ -146,7 +165,7 @@ function handleNavClick(item) {
 
 .nav-label {
   font-size: 12px;
-  color: rgba(255, 255, 255, 0.8);
+  color: rgba(255, 255, 255, 0.85);
   font-weight: 500;
   transition: all 0.3s ease;
 }
@@ -166,30 +185,37 @@ function handleNavClick(item) {
 
 /* Special button styles */
 .nav-item.special {
-  margin-top: -20px;
-  height: 76px;
-  background: linear-gradient(135deg, #ffd700, #ffa500);
-  border-radius: 50% 50% 12px 12px;
-  box-shadow: 0 -4px 12px rgba(255, 215, 0, 0.3);
+  margin-top: -22px;
+  height: 82px;
+  background: radial-gradient(
+      120% 100% at 50% -10%,
+      rgba(255, 255, 255, 0.25) 0%,
+      rgba(255, 255, 255, 0) 60%
+    ),
+    linear-gradient(135deg, #ffd700, #ffb347);
+  border-radius: 50% 50% 14px 14px;
+  box-shadow: 0 -6px 16px rgba(255, 215, 0, 0.35),
+    0 4px 14px rgba(0, 0, 0, 0.35);
   padding-top: 12px;
   overflow: visible;
+  border: 1px solid rgba(0, 0, 0, 0.2);
 }
 
 .nav-item.special .nav-icon {
   font-size: 32px;
   color: #ffffff;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
 }
 
 .nav-item.special .nav-label {
   color: #ffffff;
   font-weight: 600;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
 
 .nav-item.special:hover {
   transform: translateY(-2px);
-  box-shadow: 0 -6px 16px rgba(255, 215, 0, 0.4);
+  box-shadow: 0 -8px 18px rgba(255, 215, 0, 0.45);
 }
 
 .nav-item.special .special-indicator {

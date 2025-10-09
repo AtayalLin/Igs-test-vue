@@ -1,6 +1,6 @@
 <template>
   <header class="header">
-    <div class="user-info" @click="goToProfile">
+<div class="user-info" @click="goToProfile">
       <img :src="user.avatarUrl" alt="avatar" class="avatar" />
       <div class="user-details">
         <div class="username">{{ user.nickname }}</div>
@@ -52,8 +52,10 @@ const formattedBalance = computed(() => {
   return balance.value.toFixed(2);
 });
 
+const emit = defineEmits(["open-profile"]);
+
 function goToProfile() {
-  alert("前往個人資料頁 (尚未實作)");
+  emit("open-profile");
 }
 
 async function refreshBalance() {

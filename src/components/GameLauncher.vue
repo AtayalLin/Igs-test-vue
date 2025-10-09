@@ -92,16 +92,15 @@
         </div>
       </div>
 
-      <!-- 錯誤提示 -->
+      <!-- 錯誤提示（精美彈出） -->
       <div v-else-if="error" class="launcher-error">
-        <div class="error-content">
-          <div class="error-icon">⚠️</div>
-          <h3>遊戲啟動失敗</h3>
-          <p>{{ error }}</p>
-          <div class="error-actions">
-            <button class="retry-btn" @click="handleRetry">重試</button>
-            <button class="close-btn" @click="handleClose">關閉</button>
-          </div>
+        <div class="error-modal">
+          <div class="error-emoji">🛠️🎮</div>
+          <div class="error-title">遊戲伺服器維修中</div>
+          <div class="error-sub">目前無法進入遊戲，請稍後再試</div>
+          <button class="error-back" @click="handleClose">
+            返回到遊戲大廳
+          </button>
         </div>
       </div>
     </div>
@@ -136,19 +135,17 @@ const loadingPhase = ref("初始化中...");
 const loadingEmojis = ["🎮", "🎲", "🎯", "🎪"];
 
 // 模擬載入進度
-function simulateLoading() {
+function simulateLoadingTo(targetPercent = 100, duration = 800) {
   return new Promise((resolve) => {
     loadingProgress.value = 0;
-    const duration = 500; // 總持續時間
-    const interval = 16; // 每幀間隔
-    const steps = duration / interval;
-    const increment = 100 / steps;
+    const interval = 16;
+    const steps = Math.max(1, Math.floor(duration / interval));
+    const increment = targetPercent / steps;
     let currentStep = 0;
 
     const timer = setInterval(() => {
       currentStep++;
-      loadingProgress.value = Math.min(currentStep * increment, 100);
-
+      loadingProgress.value = Math.min(targetPercent, currentStep * increment);
       if (currentStep >= steps) {
         clearInterval(timer);
         resolve();
@@ -168,31 +165,12 @@ async function startGame() {
 
   try {
     loadingPhase.value = "連接遊戲伺服器...";
-    await simulateLoading();
-
-    loadingPhase.value = "正在獲取遊戲資源...";
-    loadingText.value = "遊戲準備中...";
-
-    // 調用 API 啟動遊戲
-    const response = await launchGame(props.game.id);
-
-    if (response.success && response.gameUrl) {
-      loadingText.value = "正在載入遊戲...";
-      gameUrl.value = response.gameUrl;
-      isIframeLoading.value = true;
-
-      console.log("✅ 遊戲啟動成功:", {
-        gameId: props.game.id,
-        gameName: props.game.name,
-        gameUrl: response.gameUrl,
-        token: response.token,
-      });
-    } else {
-      throw new Error("無法獲取遊戲 URL");
-    }
+    // 載入到 60% 即停止並觸發錯誤彈窗（模擬手機遊戲進入中斷）
+    await simulateLoadingTo(60, 900);
+    throw new Error("遊戲伺服器維修中");
   } catch (err) {
     console.error("❌ 遊戲啟動失敗:", err);
-    error.value = err.message || "遊戲啟動失敗，請稍後再試";
+    error.value = err.message || "遊戲伺服器維修中";
   } finally {
     isLoading.value = false;
   }
@@ -251,8 +229,10 @@ watch(
   left: 0;
   right: 0;
   bottom: 0;
-  z-index: 10000;
+  z-index: 1000001; /* 蓋過 Header/BottomBar 等所有層 */
   background: #000;
+  width: 100vw;
+  height: 100vh;
 }
 
 /* 載入中 */
@@ -465,6 +445,7 @@ watch(
 .game-iframe {
   flex: 1;
   width: 100%;
+  height: calc(100vh - 50px);
   border: none;
   background: #000;
 }
@@ -500,63 +481,40 @@ watch(
   background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
 }
 
-.error-content {
+.error-modal {
   text-align: center;
-  max-width: 400px;
-  padding: 40px;
+  max-width: 420px;
+  padding: 36px 32px;
+  border-radius: 20px;
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5),
+    0 0 20px rgba(255, 215, 0, 0.2) inset;
 }
-
-.error-icon {
-  font-size: 64px;
-  margin-bottom: 20px;
+.error-emoji {
+  font-size: 52px;
+  margin-bottom: 12px;
+  filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.4));
 }
-
-.error-content h3 {
-  font-size: 24px;
-  color: #ff6b6b;
-  margin-bottom: 15px;
+.error-title {
+  font-size: 22px;
+  font-weight: 800;
+  color: #ffd700;
+  margin-bottom: 8px;
 }
-
-.error-content p {
-  font-size: 16px;
-  color: rgba(255, 255, 255, 0.7);
-  margin-bottom: 30px;
+.error-sub {
+  color: rgba(255, 255, 255, 0.85);
+  margin-bottom: 16px;
 }
-
-.error-actions {
-  display: flex;
-  gap: 15px;
-  justify-content: center;
-}
-
-.retry-btn,
-.close-btn {
-  padding: 12px 30px;
+.error-back {
+  padding: 12px 24px;
+  background: linear-gradient(135deg, #ffd700, #ffb347);
   border: none;
-  border-radius: 8px;
-  font-size: 16px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.retry-btn {
-  background: linear-gradient(135deg, #ffd700 0%, #ffb347 100%);
+  border-radius: 12px;
   color: #000;
-}
-
-.retry-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(255, 215, 0, 0.4);
-}
-
-.close-btn {
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  color: white;
-}
-
-.close-btn:hover {
-  background: rgba(255, 255, 255, 0.2);
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 8px 22px rgba(255, 215, 0, 0.35);
 }
 
 /* Spinner */

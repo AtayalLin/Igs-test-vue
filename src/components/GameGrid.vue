@@ -1,5 +1,5 @@
 <template>
-  <div class="game-grid-container">
+  <div class="game-grid-container" data-aos="fade-up" data-aos-duration="700">
     <transition name="fade" mode="out-in">
       <!-- loading skeleton -->
       <div v-if="loading" key="loading" class="game-grid loading">
@@ -43,7 +43,7 @@
           appear
         >
           <div
-            v-for="(game, index) in games"
+            v-for="(game, index) in pagedGames"
             :key="game.id"
             :class="['game-card', game.layout === 'large' ? 'large' : 'small']"
             :style="{ '--delay': index * 0.06 + 's' }"
@@ -56,6 +56,8 @@
                 :alt="game.name"
                 @error="handleImageError"
                 class="game-thumb"
+                loading="lazy"
+                decoding="async"
               />
             </div>
 
@@ -73,6 +75,8 @@
                   :src="getTagBadgeImage(tag).src"
                   :alt="getTagBadgeImage(tag).alt"
                   @error="(e) => (e.target.src = getTagBadgeImage().src)"
+                  loading="lazy"
+                  decoding="async"
                 />
                 <span class="badge-glow" aria-hidden="true"></span>
               </div>
@@ -121,14 +125,50 @@
       :isVisible="isLauncherVisible"
       @close="closeLauncher"
     />
+
+    <!-- 分頁器 -->
+    <nav v-if="totalPages > 1" class="mt-3" aria-label="遊戲分頁">
+      <ul class="pagination justify-content-center">
+        <li class="page-item" :class="{ disabled: currentPage === 1 }">
+          <button
+            class="page-link"
+            @click="goPrevPage"
+            :disabled="currentPage === 1"
+          >
+            上一頁
+          </button>
+        </li>
+        <li
+          v-for="page in visiblePageNumbers"
+          :key="`p-${page}`"
+          class="page-item"
+          :class="{ active: page === currentPage, disabled: page === '…' }"
+        >
+          <button v-if="page !== '…'" class="page-link" @click="goToPage(page)">
+            {{ page }}
+          </button>
+          <span v-else class="page-link">…</span>
+        </li>
+        <li class="page-item" :class="{ disabled: currentPage === totalPages }">
+          <button
+            class="page-link"
+            @click="goNextPage"
+            :disabled="currentPage === totalPages"
+          >
+            下一頁
+          </button>
+        </li>
+      </ul>
+    </nav>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, onUpdated, nextTick, watch } from "vue";
+import { ref, onMounted, onUpdated, nextTick, watch, computed } from "vue";
 import { storeToRefs } from "pinia";
 import { useGameStore } from "../stores/useGameStore";
 import GameLauncher from "./GameLauncher.vue";
+const emit = defineEmits(["launcher-visibility"]);
 import gsap from "gsap";
 
 /**
@@ -148,6 +188,53 @@ const placeholderImg = "https://placehold.co/600x400/333/fff?text=Game";
 const isLauncherVisible = ref(false);
 const selectedGame = ref(null);
 
+// 分頁狀態
+const currentPage = ref(1);
+const pageSize = ref(8); // 每頁顯示卡片數
+
+const totalPages = computed(() => {
+  const total = games.value.length;
+  return Math.max(1, Math.ceil(total / pageSize.value));
+});
+
+const pagedGames = computed(() => {
+  const start = (currentPage.value - 1) * pageSize.value;
+  return games.value.slice(start, start + pageSize.value);
+});
+
+function goToPage(page) {
+  if (page === "…") return;
+  const target = Math.min(Math.max(1, page), totalPages.value);
+  if (target === currentPage.value) return;
+  pageTransitionOutIn(() => {
+    currentPage.value = target;
+  });
+}
+
+function goPrevPage() {
+  if (currentPage.value <= 1) return;
+  pageTransitionOutIn(() => {
+    currentPage.value -= 1;
+  });
+}
+
+function goNextPage() {
+  if (currentPage.value >= totalPages.value) return;
+  pageTransitionOutIn(() => {
+    currentPage.value += 1;
+  });
+}
+
+// 顯示簡潔分頁數字（最多 5 個 + 省略）
+const visiblePageNumbers = computed(() => {
+  const total = totalPages.value;
+  const cur = currentPage.value;
+  if (total <= 5) return Array.from({ length: total }, (_, i) => i + 1);
+  if (cur <= 3) return [1, 2, 3, 4, "…", total];
+  if (cur >= total - 2) return [1, "…", total - 3, total - 2, total - 1, total];
+  return [1, "…", cur - 1, cur, cur + 1, "…", total];
+});
+
 // --- Play / Favorite ---
 function playGame(game) {
   // prevent null
@@ -158,12 +245,14 @@ function playGame(game) {
   isLauncherVisible.value = true;
 
   console.log("🎮 啟動遊戲:", game.name);
+  emit("launcher-visibility", true);
 }
 
 // 關閉遊戲啟動器
 function closeLauncher() {
   isLauncherVisible.value = false;
   selectedGame.value = null;
+  emit("launcher-visibility", false);
 }
 
 function toggleFavorite(game) {
@@ -294,12 +383,47 @@ onUpdated(() => {
 watch(
   games,
   () => {
+    // 切換分類或搜尋時回到第一頁
+    currentPage.value = 1;
     nextTick(() => {
       animateBadges();
     });
   },
   { deep: true }
 );
+
+// 分頁切換動畫（GSAP）
+function pageTransitionOutIn(applyChange) {
+  const container = document.querySelector(".game-grid-inner");
+  if (!container) {
+    applyChange();
+    return;
+  }
+  const cards = container.children;
+  gsap.to(cards, {
+    duration: 0.25,
+    y: 10,
+    opacity: 0,
+    stagger: 0.02,
+    onComplete: () => {
+      applyChange();
+      nextTick(() => {
+        const newCards = container.children;
+        gsap.fromTo(
+          newCards,
+          { y: -10, opacity: 0 },
+          {
+            duration: 0.35,
+            y: 0,
+            opacity: 1,
+            stagger: 0.03,
+            ease: "power2.out",
+          }
+        );
+      });
+    },
+  });
+}
 </script>
 
 <style scoped>

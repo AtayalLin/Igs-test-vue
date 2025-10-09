@@ -57,30 +57,29 @@
             遊戲大廳
             <span class="title-icon">🎮</span>
           </h1>
-          <p class="loading-status">{{ loadingText }}</p>
+          <p class="loading-status loading-subtitle">{{ loadingText }}</p>
         </div>
 
         <!-- 進度條區域 -->
         <div class="progress-section">
           <!-- Bootstrap 風格進度條 -->
           <div class="progress-wrapper">
-            <div class="progress">
+            <div class="progress fancy">
+              <div class="progress-track"></div>
               <div
-                class="progress-bar progress-bar-striped progress-bar-animated"
-                role="progressbar"
+                class="progress-fill"
                 :style="{ width: progress + '%' }"
                 :aria-valuenow="progress"
                 aria-valuemin="0"
                 aria-valuemax="100"
-              >
-                <span class="progress-shine"></span>
-              </div>
+              ></div>
+              <div class="progress-emoji">🕹️</div>
             </div>
           </div>
 
           <!-- 進度百分比 -->
           <div class="progress-info">
-            <span class="progress-percentage">{{ progress.toFixed(2) }}%</span>
+            <span class="progress-percentage">{{ Math.min(100, Math.floor(progress)) }}%</span>
             <span class="progress-label">Loading...</span>
           </div>
         </div>
@@ -707,6 +706,31 @@ watch(
   border-radius: 0.375rem;
   overflow: hidden;
   box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.progress.fancy {
+  position: relative;
+  height: 14px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.progress-track {
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(90deg, rgba(255,215,0,0.08) 0 12px, transparent 12px 24px);
+}
+.progress-fill {
+  position: absolute;
+  top: 0; left: 0; bottom: 0;
+  background: linear-gradient(90deg, #ffd700, #ffb347);
+  box-shadow: 0 0 16px rgba(255, 215, 0, 0.6);
+}
+.progress-emoji {
+  position: absolute;
+  right: 6px; top: 50%; transform: translateY(-50%);
+  filter: drop-shadow(0 0 6px rgba(255,215,0,0.6));
 }
 
 .progress-bar {
