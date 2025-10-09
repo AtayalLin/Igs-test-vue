@@ -775,17 +775,17 @@ tl.to(".badge", { scale: 1.2, duration: 0.3 })
 
 ## �📝 更新日誌
 
-### v1.0.0 (2025-10-04) - 生產就緒版本
+### v1.0.0 (2025-10-07) - 生產就緒版本
 
 **🎉 重大更新**：
 
 - ✨ **完整的遊戲大廳功能**（95% 完成度）
 - ✨ **固定頂部和底部佈局**，中間內容區可滾動
 - ✨ **完整的過場動畫**（進度條、粒子效果、Logo 動畫）
-- ✨ **定時輪詢刷新**（30 秒間隔，可配置）
+- ✨ **定時輪詢刷新**
 - ✨ **下拉刷新手勢**（支援觸控設備）
 - ✨ **完整的遊戲啟動流程**（Iframe 全屏載入）
-- ✨ **API 服務層整合**（RESTful API 接口）
+
 
 **新增功能**：
 
@@ -799,7 +799,6 @@ tl.to(".badge", { scale: 1.2, duration: 0.3 })
 - ✨ 標籤徽章圖片系統
 - ✨ 收藏管理功能
 - ✨ 搜尋功能
-- ✨ GSAP 動畫整合
 - ✨ 骨架屏載入狀態
 
 **優化改進**：
@@ -822,7 +821,6 @@ tl.to(".badge", { scale: 1.2, duration: 0.3 })
 
 **技術改進**：
 
-- 🔧 完整的 API 接口層
 - 🔧 錯誤處理和後備機制
 - 🔧 Composable 架構
 - 🔧 環境變數配置（.env.example）
@@ -905,19 +903,13 @@ VITE_WS_URL=wss://your-api-domain.com/ws
 
 ---
 
-## 📄 授權
-
-本專案採用 MIT 授權 - 詳見 [LICENSE](LICENSE) 文件
-
----
-
 ## 👥 作者
 
 **AtayalLin** - [GitHub](https://github.com/AtayalLin)
 
 ---
 
-## 🙏 致謝
+## 使用插件
 
 - [Vue.js](https://vuejs.org/) - 漸進式 JavaScript 框架
 - [Vite](https://vitejs.dev/) - 下一代前端構建工具
@@ -925,13 +917,6 @@ VITE_WS_URL=wss://your-api-domain.com/ws
 - [Bootstrap](https://getbootstrap.com/) - CSS 框架
 - [GSAP](https://greensock.com/gsap/) - 動畫庫
 - [GitHub Pages](https://pages.github.com/) - 靜態網站託管
-
----
-
-## 📞 聯繫方式
-
-- **GitHub Issues**: [提交問題](https://github.com/AtayalLin/Igs-test-vue/issues)
-- **GitHub Discussions**: [參與討論](https://github.com/AtayalLin/Igs-test-vue/discussions)
 
 ---
 
@@ -943,7 +928,7 @@ VITE_WS_URL=wss://your-api-domain.com/ws
 ![GitHub forks](https://img.shields.io/github/forks/AtayalLin/Igs-test-vue)
 
 **當前版本**: v1.0.0
-**最後更新**: 2025-10-04
+**最後更新**: 2025-10-07 下午 4:30 
 **部署狀態**: ✅ 已部署到 GitHub Pages
 
 ---
@@ -952,16 +937,7 @@ VITE_WS_URL=wss://your-api-domain.com/ws
 
 如有問題或建議，請通過以下方式聯繫：
 
-- 📧 Email: support@gamehall.com
-- 💬 Discord: [加入我們的社群](https://discord.gg/gamehall)
-- 🐛 Issues: [GitHub Issues](https://github.com/your-repo/game-hall/issues)
+- 📧 Email: a437777@gamehall.com
 
 ---
 
-<div align="center">
-
-**⭐ 如果這個專案對您有幫助，請給我們一個 Star！⭐**
-
-Made with ❤️ by Game Hall Team01
-
-</div>
